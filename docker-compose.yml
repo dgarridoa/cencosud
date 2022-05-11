@@ -4,11 +4,11 @@ services:
   app:
     build:
       context: .
-    ports:
-      - 8000:5000
+    depends_on:
+      - "mysqldb"
     volumes:
       - ./:/app
-    command: pytest 
+    command: ["pytest",  "-v"]
   mysqldb:
     image: mysql:8.0.29
     ports:
