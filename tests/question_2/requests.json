@@ -1,0 +1,192 @@
+{
+    "data": [
+        {
+            "timestamp": "2022-05-13 08:00:00",
+            "call": {
+                "floor": 1,
+                "sense": "upward",
+                "elevator_id": -1,
+                "call_type": "out"
+            },
+            "state": {
+                "0": 1,
+                "1": 1,
+                "2": 1
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:05",
+            "call": {
+                "floor": 4,
+                "sense": "upward",
+                "elevator_id": 0,
+                "call_type": "in"
+            },
+            "state": {
+                "0": 1,
+                "1": 1,
+                "2": 1
+            }
+         },
+        {
+            "timestamp": "2022-05-13 08:00:10",
+            "call": {
+                "floor": 5,
+                "sense": "downward",
+                "elevator_id": -1,
+                "call_type": "out"
+            },
+            "state": {
+                "0": 1,
+                "1": 1,
+                "2": 1
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:15",
+            "call": {
+                "floor": 10,
+                "sense": "downward",
+                "elevator_id": -1,
+                "call_type": "out"
+            },
+            "state": {
+                "0": 1,
+                "1": 1,
+                "2": 1
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:20",
+            "call": {
+                "floor": 3,
+                "sense": "upward",
+                "elevator_id": -1,
+                "call_type": "out"
+            },
+            "state": {
+                "0": 2,
+                "1": 2,
+                "2": 2
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:25",
+            "call": {
+                "floor": 7,
+                "sense": "upward",
+                "elevator_id": 0,
+                "call_type": "in"
+            },
+            "state": {
+                "0": 3,
+                "1": 3,
+                "2": 3
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:30",
+            "call": {
+                "floor": 2,
+                "sense": "downward",
+                "elevator_id": -1,
+                "call_type": "out"
+            },
+            "state": {
+                "0": 4,
+                "1": 4,
+                "2": 4
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:35",
+            "call": {
+                "floor": 4,
+                "sense": "downward",
+                "elevator_id": 1,
+                "call_type": "in"
+            },
+            "state": {
+                "0": 5,
+                "1": 5,
+                "2": 5
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:40",
+            "state": {
+                "0": 6,
+                "1": 4,
+                "2": 6
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:45",
+            "state": {
+                "0": 7,
+                "1": 3,
+                "2": 7
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:50",
+            "state": {
+                "0": 7,
+                "1": 3,
+                "2": 8
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:40",
+            "call": {
+                "floor": 1,
+                "sense": "downward",
+                "elevator_id": 1,
+                "call_type": "in"
+            },
+            "state": {
+                "0": 7,
+                "1": 2,
+                "2": 9
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:45",
+            "call": {
+                "floor": 9,
+                "sense": "downward",
+                "elevator_id": 2,
+                "call_type": "in"
+            },
+            "state": {
+                "0": 7,
+                "1": 1,
+                "2": 10
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:50",
+            "state": {
+                "0": 7,
+                "1": 1,
+                "2": 9
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:00:55",
+            "state": {
+                "0": 7,
+                "1": 1,
+                "2": 9
+            }
+        },
+        {
+            "timestamp": "2022-05-13 08:01:00",
+            "state": {
+                "0": 7,
+                "1": 1,
+                "2": 9
+               }
+        }
+    ]
+}
