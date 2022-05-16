@@ -6,7 +6,7 @@ class TestHumanResources:
     hrg = HumanResourcesGenerator()
     hrg.sample()
     hr = HumanResources()
-    hr.create_random_db(hrg)
+    hr.create_populated_db(hrg)
 
     def test_get_avg_children_per_marriage(self):
         assert self.hr.get_avg_children_per_marriage() == 2.4

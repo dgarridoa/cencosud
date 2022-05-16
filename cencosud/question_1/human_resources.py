@@ -100,7 +100,7 @@ class HumanResources:
         Parameters
         ----------
         sample: HumanResourcesGenerator
-            Object with random data for all tables in hhrr.
+            Object with data for all tables in hhrr.
         """
 
         cursor = self.conection.cursor()
@@ -130,21 +130,21 @@ class HumanResources:
 
         return "db populated"
 
-    def create_random_db(self, sample):
+    def create_populated_db(self, sample):
         """
-        Create the hhrr database and populate it with random data.
+        Create the hhrr database and populate it with sample.
 
         Parameters
         ----------
         sample: HumanResourcesGenerator
-            Object with random data for all tables in hhrr.
+            Object with data for all tables in hhrr.
         """
         self.create_db()
         self.create_tbl_personas()
         self.create_tbl_conyuges()
         self.create_tbl_hijos()
         self.truncate_db(sample)
-        return "random db created"
+        return "populated db created"
 
     def get_avg_children_per_marriage(self):
         """
@@ -192,11 +192,11 @@ class HumanResources:
             FROM marriages_and_children
             GROUP BY id
           )
-          SELECT
-            AVG(IFNULL(chbm.num_children, 0)) avg_per_marriage
-          FROM hhrr.conyuges AS c
-          LEFT JOIN count_children_by_marriage AS chbm
-          ON c.id = chbm.id
+        SELECT
+          AVG(IFNULL(chbm.num_children, 0)) avg_per_marriage
+        FROM hhrr.conyuges AS c
+        LEFT JOIN count_children_by_marriage AS chbm
+        ON c.id = chbm.id
         """)
         result = float(cursor.fetchall()[0][0])
         cursor.close()
@@ -231,11 +231,11 @@ class HumanResources:
                 MAX(num_grandchildren)
               FROM count_grandchildren_by_person)
             LIMIT 1)
-         SELECT *
-         FROM hhrr.personas
-         WHERE id = (
-           SELECT id_padre
-           FROM person_with_max_number_grandchildren)
+        SELECT *
+        FROM hhrr.personas
+        WHERE id = (
+          SELECT id_padre
+          FROM person_with_max_number_grandchildren)
         """)
         result = dict(zip(
             ("id", "nombre", "rut", "dv", "nacimiento", "defuncion"),
