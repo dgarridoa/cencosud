@@ -6,9 +6,13 @@ services:
       context: .
     depends_on:
       - "mysqldb"
+    command: >
+      bash -c "pytest -v
+      && jupyter lab --allow-root --ip=0.0.0.0 --no-browser --NotebookApp.token=''"
+    ports:
+      - 8888:8888
     volumes:
       - ./:/app
-    command: ["pytest",  "-v"]
   mysqldb:
     image: mysql:8.0.29
     ports:
