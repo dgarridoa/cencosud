@@ -4,7 +4,7 @@
 
 El sistema de gestión de ascensores asume que existe otro sistema el cual se comunica con este a través de requests. Cada request informa al sistema la posición actual de los elevadores y opcionalmente solicitan el ingreso de una llamada. 
 
-Cuando la llamada es de tipo **"in"** (desde el interior de un elevador) debe llevar la `id` del elevador desde el que se realiza la petición. Estas llamadas son ignoradas si no van en el mismo sentido al que dirige el elevador.
+Cuando la llamada es de tipo **"in"** (desde el interior de un elevador) debe llevar la `id` del elevador desde el que se realiza la petición. Estas llamadas son ignoradas si no van en el mismo sentido al que se dirige el elevador.
 
 Cuando la llamada es de tipo **"out"** (desde afuera de los elevadores) se asigna al elevador disponible más cercano. Si no hay elevadores disponibles la llamada se ingresa a una cola, de esta manera cada vez que se actualicen las posiciones de los elevadores el sistema intentará nuevamente asignar la llamada. Un elevador se considera disponible si está vacío, o si la llamada actual tiene el mismo sentido de la última llamada y si es **"upward"** (**"downward"**) en una posición igual o inferior (superior) a la posición actual del ascensor. Adicionalmente, se asume que una llamada **"downward"** desde el piso 1 o una **"upward"** desde el piso 10 no son request que el sistema deba gestionar. Por último, el parámetro `wait` controla los segundos que debe esperar el elevador antes de limpiar de su cola una llamada tipo **"out"** a pesar que el elevador ha llegado a su destino, esto con el objetivo de priorizar una llamada tipo **"in"** por sobre una **"out"**.
 
