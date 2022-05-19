@@ -199,8 +199,8 @@ class Elevator:
     def update_position(self, position: int, timestamp: datetime):
         """
         Update elevator floor. Also remove answered calls when is appropriate.
-        When the last_call is "in" the delta time between timestamp and
-        last_call.timestamp should be greather than self.wait.
+        When not the last_call is "in" and the delta time between timestamp and
+        last_call.timestamp is equal or lower than than self.wait.
 
         Paremeters
         ----------

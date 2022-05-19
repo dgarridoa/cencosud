@@ -22,7 +22,6 @@ class TestElevatorSystem:
         es_system = ElevatorSystem(self.n_elevators, self.n_floors, self.wait)
         elevators = [Elevator(elevator_id, self.wait)
                      for elevator_id in range(self.n_elevators)]
-        print(elevators, es_system.elevators)
         assert all(es == e for es, e in zip(es_system.elevators, elevators))
 
     def test_get_nearest_elevator(self):
@@ -70,7 +69,6 @@ class TestElevatorSystem:
         assert system_state == state
 
     def test_take_request(self):
-        # fail
         es_system = ElevatorSystem(self.n_elevators, self.n_floors, self.wait)
         request = {
             "timestamp": "2022-05-13 08:00:00",
