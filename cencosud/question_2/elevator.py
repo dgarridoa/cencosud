@@ -199,8 +199,8 @@ class Elevator:
     def update_position(self, position: int, timestamp: datetime):
         """
         Update elevator floor. Also remove answered calls when is appropriate.
-        When not the last_call is "in" and the delta time between timestamp and
-        last_call.timestamp is equal or lower than than self.wait.
+        When not the last_call is "out" and the delta time between timestamp
+        and last_call.timestamp is equal or lower than than self.wait.
 
         Paremeters
         ----------
@@ -212,7 +212,7 @@ class Elevator:
         self.floor = position
         if not self.queue.is_empty:
             last_call = self.queue.calls[-1]
-            if not (last_call.call_type == "in" and
+            if not (last_call.call_type == "out" and
                     self.wait >= timestamp - last_call.timestamp):
                 self.remove_answered_calls()
 
