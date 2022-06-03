@@ -1,7 +1,8 @@
 pytest==7.1.2
 pydantic==1.9.1
-mysql-connector-python==8.0.29
 numpy==1.22.3
+PyMySQL==1.0.2
+cryptography==37.0.2
 SQLAlchemy==1.4.36
 tensorflow==2.8.0
 matplotlib==3.5.2
