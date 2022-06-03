@@ -8,7 +8,7 @@ class HumanResources:
 
     Create a conection with a MySQL database.
 
-    Attributes
+    Parameters
     ----------
     conection : MySQLConnection
         Object that open a conetion to a MySQL database.
@@ -99,7 +99,7 @@ class HumanResources:
 
         Parameters
         ----------
-        sample: HumanResourcesGenerator
+        sample : HumanResourcesGenerator
             Object with data for all tables in hhrr.
         """
 
@@ -136,7 +136,7 @@ class HumanResources:
 
         Parameters
         ----------
-        sample: HumanResourcesGenerator
+        sample : HumanResourcesGenerator
             Object with data for all tables in hhrr.
         """
         self.create_db()
@@ -152,7 +152,7 @@ class HumanResources:
 
         Returns
         -------
-        result: float
+        result : float
             Average number of children per marriage.
         """
         cursor = self.conection.cursor()
@@ -205,9 +205,10 @@ class HumanResources:
     def get_person_with_max_number_grandchildren(self):
         """
         Get the person with the maximum number of grandchildren.
+
         Return
         -------
-        result: dit
+        result : dit
             Dictionary with the data of the person with the maximum number of
             grandchildren.
         """

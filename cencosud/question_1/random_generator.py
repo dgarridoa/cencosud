@@ -10,26 +10,23 @@ class HumanResourcesGenerator:
 
     Parameters
     ----------
-    n_personas: int
+    n_personas : int
         Number of people to sample.
-    n_conyuges: int
+    n_conyuges : int
         Number of marriages to sample.
-    n_hijos: int
+    n_hijos : int
         Number of children to sample.
-    min_date: datetime
+    min_date : datetime
         Minimum random date.
-    max_date: datetime
+    max_date : datetime
         Maximum random date.
-    seed: int
+    seed : int
         Random seed.
-
-    Attributes
-    ----------
-    personas: list of dict
+    personas: list of dict, default=[]
         A list of random people.
-    conyuges: list of dict
+    conyuges: list of dict, default=[]
         A list of random marriages.
-    hijos: list of dict
+    hijos: list of dict, default=[]
         A list of random children.
 
     Examples
@@ -128,16 +125,16 @@ class HumanResourcesGenerator:
 
         Parameters
         ----------
-        persona_1: dict
+        persona_1 : dict
           A row in table persona with shape {column_name : column_value}.
-        persona_2: dict
+        persona_2 : dict
           A row in table persona with shape {column_name : column_value}.
-        max_date: str
+        max_date : str
           The maximum possible celebration date.
 
         Returns
         -------
-        celebration_date: str or None
+        celebration_date : str or None
            Random marraige celebration date in format "yyyy-mm-dd".
            The date is generated from the sample of dates where both are 18
            older, both are alive and before max_date, otherwise None.
