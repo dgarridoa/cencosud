@@ -1,26 +1,27 @@
 from datetime import datetime, timedelta
 from cencosud.question_2.call import Call
+from typing import List, Dict
+from pydantic import BaseModel, NonNegativeInt, PositiveInt, constr, validate_arguments
 
 
-class ElevatorQueue:
+class ElevatorQueue(BaseModel):
     """
     Data structure to manage an elevator queue.
 
-    Attributes
+    Parameters
     ----------
-    is_empty : bool
+    is_empty : bool, default=True
         True if no pending calls, else False.
-    calls : list[Call]
+    calls : List[Call], default=[]
         List with pending calls.
     """
-    def __init__(self):
-        self.is_empty = True
-        self.calls = []
+    is_empty: bool = True
+    calls: List[Call] = []
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return all(sc == oc for sc, oc in zip(self.calls, other.calls))
 
-    def sort(self, reverse: bool):
+    def sort(self, reverse: bool) -> None:
         """
         Sorts pending calls by priority using their floor values.
 
@@ -32,7 +33,7 @@ class ElevatorQueue:
         """
         self.calls.sort(key=lambda x: x.floor, reverse=reverse)
 
-    def append(self, call: Call):
+    def append(self, call: Call) -> None:
         """
         Add call to the list of pending calls in the appropriate order.
 
@@ -46,7 +47,7 @@ class ElevatorQueue:
         self.sort(reverse=reverse)
         self.is_empty = False
 
-    def pop(self):
+    def pop(self) -> Call:
         """
         Remove call with the highest priority.
 
@@ -60,35 +61,36 @@ class ElevatorQueue:
         return call
 
 
-class Elevator:
+class Elevator(BaseModel):
     """
     Class to represent an elevator and manage its queue.
 
-    Attributes
+    Parameters
     ----------
     elevator_id :int
-        Unique identifier.
-    floor : int
-        Floor where is located.
+        Unique identifier. Must be non negative integer.
+    floor : int, default=1
+        Floor where is located. Must be a positive integer.
     sense : str
-        Sense where is moving.
+        Sense where is moving. Can take value "upward", "downward" or empty "".
     queue : ElevatorQueue
         Pending calls.
-    wait : timedelta
-        Seconds that the elevator waits before clean its queue. The
-        implications of this is that an elevator that took an out call wait for
-        the in call, if no in call received the elevator is able to take other
-        calls.
+    wait : timedelta, default=timedelta(seconds=10)
+        Seconds that the elevator waits before clean a ready to clean out call
+        from its queue. The implications of this is that an elevator that took
+        an out call wait for the in call, if no in call received the elevator
+        is able to take other calls.
+    timestamp : datetime, default=None
+        Current timestamp.
     """
-    def __init__(self, elevator_id: int, wait: timedelta):
-        self.elevator_id = elevator_id
-        self.floor = 1
-        self.sense = ""
-        self.queue = ElevatorQueue()
-        self.wait = wait
-        self.timestamp = None
+    elevator_id: NonNegativeInt
+    floor: PositiveInt = 1
+    sense: constr(regex="^upward$|^downward$|") = ""
+    queue: ElevatorQueue = ElevatorQueue()
+    wait: timedelta = timedelta(seconds=10)
+    timestamp: datetime = None
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (
             self.elevator_id == other.elevator_id and
             self.floor == other.floor and
@@ -98,7 +100,7 @@ class Elevator:
             self.timestamp == other.timestamp
         )
 
-    def is_available_to_take_in_call(self, call: Call):
+    def is_available_to_take_in_call(self, call: Call) -> bool:
         """
         Test if Elevator is able to take a "in" call.
 
@@ -106,15 +108,23 @@ class Elevator:
         ----------
         call : Call
             Call object with call.call_type == "in".
+
         Returns
         -------
         is_available : bool
             True if the Elevetar is able to take the call, otherwise False.
         """
-        is_available = self.elevator_id == call.elevator_id
+        if self.queue.is_empty:
+            is_available = False
+        else:
+            last_call = self.queue.calls[-1]
+            is_available = (
+                self.elevator_id == call.elevator_id and
+                last_call.sense == call.sense
+            )
         return is_available
 
-    def is_available_to_take_out_call(self, call: Call):
+    def is_available_to_take_out_call(self, call: Call) -> bool:
         """
         Test if Elevator is able to take a "out" call.
 
@@ -122,6 +132,7 @@ class Elevator:
         ----------
         call : Call
             Call object with call.call_type == "out".
+
         Returns
         -------
         is_available : bool
@@ -130,22 +141,14 @@ class Elevator:
         if self.queue.is_empty:
             is_available = True
         else:
-            last_call = self.queue.calls[-1]
-            if self.sense != last_call.sense:
-                is_available = False
-            elif (self.sense == "upward" and
-                  self.floor <= call.floor and
-                  last_call.sense == call.sense):
-                is_available = True
-            elif (self.sense == "downward" and
-                  self.floor >= call.floor and
-                  last_call.sense == call.sense):
-                is_available = True
-            else:
-                is_available = False
+            is_available = (
+                self.sense == call.sense and
+                (self.sense == "upward" and self.floor <= call.floor) or
+                (self.sense == "downward" and self.floor >= call.floor)
+            )
         return is_available
 
-    def is_available_to_take_call(self, call: Call):
+    def is_available_to_take_call(self, call: Call) -> bool:
         """
         Test if Elevator is able to take a call.
 
@@ -153,6 +156,7 @@ class Elevator:
         ----------
         call : Call
             Pending call.
+
         Returns
         -------
         is_available : bool
@@ -164,7 +168,7 @@ class Elevator:
             is_available = self.is_available_to_take_out_call(call)
         return is_available
 
-    def take_call(self, call: Call):
+    def take_call(self, call: Call) -> None:
         """
         Add call to elevator queue. This method don't validate if the elevator
         is available to take the call.
@@ -174,10 +178,12 @@ class Elevator:
         call : Call
             Pending call.
         """
+        if call.call_type == "in":
+            self.remove_answered_calls()
         self.sense = "upward" if self.floor <= call.floor else "downward"
         self.queue.append(call)
 
-    def remove_answered_calls(self):
+    def remove_answered_calls(self) -> None:
         """
         Remove calls answered from elevator queue. When sense is "upward"
         remove calls under the current elevator floor. When sense is
@@ -186,17 +192,17 @@ class Elevator:
         """
         if not self.queue.is_empty:
             call_floor = self.queue.calls[-1].floor
-            up_answered = (self.sense == "upward" and
-                           self.floor >= call_floor)
-            down_answered = (self.sense == "downward" and
-                             self.floor <= call_floor)
-            if up_answered or down_answered:
+            is_answered = (
+                (self.sense == "upward" and self.floor >= call_floor) or
+                (self.sense == "downward" and self.floor <= call_floor)
+            )
+            if is_answered:
                 self.queue.pop()
                 self.remove_answered_calls()
         else:
             self.sense = ""
 
-    def update_position(self, position: int, timestamp: datetime):
+    def update_position(self, position: int, timestamp: datetime) -> None:
         """
         Update elevator floor. Also remove answered calls when is appropriate.
         When not the last_call is "out" and the delta time between timestamp
@@ -212,38 +218,47 @@ class Elevator:
         self.floor = position
         if not self.queue.is_empty:
             last_call = self.queue.calls[-1]
-            if not (last_call.call_type == "out" and
-                    self.wait >= timestamp - last_call.timestamp):
+            if self.floor == last_call.floor:
+                last_call(timestamp)
+            if (not last_call.not_attended and
+                    (last_call.call_type == "in" or
+                     self.wait < timestamp - last_call.timestamp)):
                 self.remove_answered_calls()
 
 
-class ElevatorSystem:
+class ElevatorSystem(BaseModel):
     """
     Class to manage calls in an elevator system.
 
-    Attributes
+    Parameters
     ----------
     n_elevators : int
-        Number of elevators that the system manages.
+        Number of elevators that the system manages. Must be a positive
+        integer.
     n_floors : int
-        Number of floors that the system has.
-    wait : timedelta
-        Seconds that an elevator waits before clean its queue. The
-        implications of this is that an elevator that took an out call wait for
-        the in call, if no in call received the elevator is able to take other
-        calls.
-    elevators : list[Elevator]
+        Number of floors that the system has. Must be a positive integer.
+    wait : timedelta, default=timedelta(seconds=10)
+        Seconds that the elevator waits before clean a ready to clean out call
+        from its queue. The implications of this is that an elevator that took
+        an out call wait for the in call, if no in call received the elevator
+        is able to take other calls.
+    elevators : List[Elevator]
         List of elevators that make up the system.
+    queue : ElevatorQueue,
+        Queue with calls pending assignment.
     """
-    def __init__(self, n_elevators: int, n_floors: int, wait: timedelta):
-        self.n_elevators = n_elevators
-        self.n_floors = n_floors
-        self.wait = wait
-        self.elevators = [Elevator(elevator_id, wait)
-                          for elevator_id in range(n_elevators)]
-        self.queue = ElevatorQueue()
+    n_elevators: PositiveInt
+    n_floors: PositiveInt
+    wait: timedelta = timedelta(seconds=10)
+    elevators: List[Elevator] = []
+    queue: ElevatorQueue = ElevatorQueue()
 
-    def get_elevators_available(self, call: Call):
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
+        self.elevators = [Elevator(elevator_id=elevator_id, wait=self.wait)
+                          for elevator_id in range(self.n_elevators)]
+
+    def get_elevators_available(self, call: Call) -> List[Elevator]:
         """
         Get elevators that are available to take call.
 
@@ -251,6 +266,7 @@ class ElevatorSystem:
         ----------
         call : Call
             Call to evaluate.
+
         Returns
         -------
         elevators_available : List[Elevator]
@@ -262,7 +278,11 @@ class ElevatorSystem:
                 elevators_available.append(elevator)
         return elevators_available
 
-    def get_nearest_elevator(self, elevators, call):
+    def get_nearest_elevator(
+        self,
+        elevators: List[Elevator],
+        call: Call
+    ) -> Elevator:
         """
         Get the nearest elevator to a call.
         When is more than one return the first.
@@ -288,7 +308,7 @@ class ElevatorSystem:
                 minimum_distance = distance
         return nearest_elevator
 
-    def take_call(self, call: Call):
+    def take_call(self, call: Call) -> None:
         """
         Assign call to an available elevator. When there are elevators
         available, the nearest one is assigned; otherwise the call is entered
@@ -306,7 +326,8 @@ class ElevatorSystem:
         else:
             self.queue.append(call)
 
-    def update_state(self, state: dict, timestamp: datetime):
+    @validate_arguments
+    def update_state(self, state: Dict[int, int], timestamp: datetime) -> None:
         """
         Update elevator positions and assign self.queue calls if elevators are
         available.
@@ -319,13 +340,15 @@ class ElevatorSystem:
         timestamp : datetime
             The time of the state.
         """
-        for elevator in self.elevators:
-            elevator.update_position(state[elevator.elevator_id], timestamp)
+        for elevator_id in range(self.n_elevators):
+            elevator = self.elevators[elevator_id]
+            elevator.update_position(state[elevator_id], timestamp)
         if not self.queue.is_empty:
             call = self.queue.pop()
             self.take_call(call)
 
-    def take_request(self, request: dict):
+    @validate_arguments
+    def take_request(self, request: Dict) -> None:
         """
         Take request to update elevator positions and assign call if call data
         is sent.
@@ -341,20 +364,15 @@ class ElevatorSystem:
             }
             The key call is optional.
         """
-        timestamp = datetime.strptime(request["timestamp"],
-                                      "%Y-%m-%d %H:%M:%S")
-        state = {int(key): value for key, value in request["state"].items()}
-        self.update_state(state, timestamp)
+        self.update_state(request["state"], request["timestamp"])
         if request.get("call"):
-            call_data = request["call"]
-            call_data["timestamp"] = timestamp
-            call = Call(**call_data)
+            call = Call(**request["call"])
             if call.floor > self.n_floors:
                 raise ValueError(
                     "Call can not come from a floor greather than n_floors")
             self.take_call(call)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Print the queue of each elevator.
         """

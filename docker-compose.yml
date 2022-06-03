@@ -7,7 +7,7 @@ services:
     depends_on:
       - "mysqldb"
     command: >
-      bash -c "pytest -v
+      bash -c "pytest -vv
       && jupyter lab --allow-root --ip=0.0.0.0 --no-browser --NotebookApp.token=''"
     ports:
       - 8888:8888

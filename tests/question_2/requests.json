@@ -5,7 +5,6 @@
             "call": {
                 "floor": 1,
                 "sense": "upward",
-                "elevator_id": -1,
                 "call_type": "out"
             },
             "state": {
@@ -33,7 +32,6 @@
             "call": {
                 "floor": 5,
                 "sense": "downward",
-                "elevator_id": -1,
                 "call_type": "out"
             },
             "state": {
@@ -47,7 +45,6 @@
             "call": {
                 "floor": 10,
                 "sense": "downward",
-                "elevator_id": -1,
                 "call_type": "out"
             },
             "state": {
@@ -61,7 +58,6 @@
             "call": {
                 "floor": 3,
                 "sense": "upward",
-                "elevator_id": -1,
                 "call_type": "out"
             },
             "state": {
@@ -89,7 +85,6 @@
             "call": {
                 "floor": 2,
                 "sense": "downward",
-                "elevator_id": -1,
                 "call_type": "out"
             },
             "state": {
