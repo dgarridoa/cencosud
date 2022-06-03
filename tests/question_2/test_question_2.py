@@ -19,13 +19,19 @@ class TestElevatorSystem:
         system_states = f.read()
 
     def test_get_elevators_available(self):
-        es_system = ElevatorSystem(self.n_elevators, self.n_floors, self.wait)
-        elevators = [Elevator(elevator_id, self.wait)
+        es_system = ElevatorSystem(
+            n_elevators=self.n_elevators,
+            n_floors=self.n_floors,
+            wait=self.wait)
+        elevators = [Elevator(elevator_id=elevator_id, wait=self.wait)
                      for elevator_id in range(self.n_elevators)]
         assert all(es == e for es, e in zip(es_system.elevators, elevators))
 
     def test_get_nearest_elevator(self):
-        es_system = ElevatorSystem(self.n_elevators, self.n_floors, self.wait)
+        es_system = ElevatorSystem(
+            n_elevators=self.n_elevators,
+            n_floors=self.n_floors,
+            wait=self.wait)
         es_system.elevators[0].floor = 10
         es_system.elevators[1].floor = 1
         es_system.elevators[2].floor = 5
@@ -34,29 +40,39 @@ class TestElevatorSystem:
             "call_type": "out",
             "floor": 7,
             "sense": "upward",
-            "timestamp": "",
-            "elevator_id": -1
         })
         nearest_elevator = es_system.get_nearest_elevator(
             es_system.elevators, call)
         assert nearest_elevator.elevator_id == 2
 
     def test_take_call(self):
-        es_system = ElevatorSystem(self.n_elevators, self.n_floors, self.wait)
-        call = Call("out", 7, "upward", datetime(2019, 1, 1))
+        es_system = ElevatorSystem(
+            n_elevators=self.n_elevators,
+            n_floors=self.n_floors,
+            wait=self.wait)
+        call = Call(call_type="out", floor=7, sense="upward")
         es_system.take_call(call)
         assert es_system.elevators[0].queue.calls[0] == call
 
     def test_take_call_when_no_elevator_available(self):
-        es_system = ElevatorSystem(self.n_elevators, self.n_floors, self.wait)
+        es_system = ElevatorSystem(
+            n_elevators=self.n_elevators,
+            n_floors=self.n_floors,
+            wait=self.wait)
+
+        call = Call(call_type="out", floor=7, sense="upward")
         for elevator in es_system.elevators:
-            elevator.take_call(Call("out", 7, "upward", datetime(2019, 1, 1)))
-        call = Call("out", 3, "downward", datetime(2019, 1, 1))
+            elevator.take_call(call)
+
+        call = Call(call_type="out", floor=3, sense="downward")
         es_system.take_call(call)
         assert es_system.queue.calls[0] == call
 
     def test_update_state(self):
-        es_system = ElevatorSystem(self.n_elevators, self.n_floors, self.wait)
+        es_system = ElevatorSystem(
+            n_elevators=self.n_elevators,
+            n_floors=self.n_floors,
+            wait=self.wait)
         state = {
             0: 10,
             1: 2,
@@ -69,13 +85,15 @@ class TestElevatorSystem:
         assert system_state == state
 
     def test_take_request(self):
-        es_system = ElevatorSystem(self.n_elevators, self.n_floors, self.wait)
+        es_system = ElevatorSystem(
+            n_elevators=self.n_elevators,
+            n_floors=self.n_floors,
+            wait=self.wait)
         request = {
             "timestamp": "2022-05-13 08:00:00",
             "call": {
                 "floor": 2,
                 "sense": "upward",
-                "elevator_id": -1,
                 "call_type": "out"
             },
             "state": {
@@ -85,15 +103,14 @@ class TestElevatorSystem:
             }
         }
         es_system.take_request(request)
-        timestamp = datetime.strptime(request["timestamp"],
-                                      "%Y-%m-%d %H:%M:%S")
-        call_data = request["call"]
-        call_data["timestamp"] = timestamp
-        call = Call(**call_data)
+        call = Call(**request["call"])
         assert es_system.elevators[1].queue.calls[0] == call
 
     def test_take_request_with_multiple_requests(self):
-        es_system = ElevatorSystem(self.n_elevators, self.n_floors, self.wait)
+        es_system = ElevatorSystem(
+            n_elevators=self.n_elevators,
+            n_floors=self.n_floors,
+            wait=self.wait)
         system_states = ""
         for request in self.requests:
             es_system.take_request(request)

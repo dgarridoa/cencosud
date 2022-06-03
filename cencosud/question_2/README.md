@@ -6,7 +6,7 @@ El sistema de gestión de ascensores asume que existe otro sistema el cual se co
 
 Cuando la llamada es de tipo **"in"** (desde el interior de un elevador) debe llevar la `id` del elevador desde el que se realiza la petición. Estas llamadas son ignoradas si no van en el mismo sentido al que se dirige el elevador.
 
-Cuando la llamada es de tipo **"out"** (desde afuera de los elevadores) se asigna al elevador disponible más cercano. Si no hay elevadores disponibles la llamada se ingresa a una cola, de esta manera cada vez que se actualicen las posiciones de los elevadores el sistema intentará nuevamente asignar la llamada. Un elevador se considera disponible si está vacío, o si la llamada actual tiene el mismo sentido de la última llamada y si es **"upward"** (**"downward"**) en una posición igual o inferior (superior) a la posición actual del ascensor. Adicionalmente, se asume que una llamada **"downward"** desde el piso 1 o una **"upward"** desde el piso 10 no son request que el sistema deba gestionar. Por último, el parámetro `wait` controla los segundos que debe esperar el elevador antes de limpiar de su cola una llamada tipo **"out"** a pesar que el elevador ha llegado a su destino, esto con el objetivo de priorizar una llamada tipo **"in"** por sobre una **"out"**.
+Cuando la llamada es de tipo **"out"** (desde afuera de los elevadores) se asigna al elevador disponible más cercano. Si no hay elevadores disponibles la llamada se ingresa a una cola, de esta manera cada vez que se actualicen las posiciones de los elevadores el sistema intentará nuevamente asignar la llamada. Un elevador se considera disponible si está vacío, o si la llamada actual tiene el mismo sentido que el ascensor y si es **"upward"** (**"downward"**) en una posición igual o superior (inferior) a la posición actual del ascensor. Adicionalmente, se asume que una llamada **"downward"** desde el piso 1 o una **"upward"** desde el piso 10 no son request que el sistema deba gestionar. Por último, el parámetro `wait` controla los segundos que debe esperar el elevador antes de limpiar de su cola una llamada tipo **"out"** a pesar que el elevador ha llegado a su destino, esto con el objetivo de priorizar una llamada entrante tipo **"in"** por sobre una **"out"**.
 
 `ElevatorSystem` es la clase que gestiona las llamadas y las posiciones de los elevadores. Para esto crea instancias de la clase `Elevator` para gestionar de manera interna las colas de cada elevador, verificar si estan disponibles para tomar una llamada y asignarlas. Cada elevador cuenta con una instancia de `ElevatorQueue`, una estructura de datos que facilita agregar, eliminar y ordenar llamadas. Por último, esta la clase `Call`, una estructura de datos que facilita la gestión de los datos de una llamada.
 
@@ -22,7 +22,7 @@ from cencosud.question_2.elevator import ElevatorSystem
 n_elevators = 10
 n_floors = 10
 wait = timedelta(seconds=10)
-es = ElevatorSystem(n_elevators, n_floors, wait)
+es = ElevatorSystem(n_elevators=n_elevators, n_floors=n_floors, wait=wait)
 
 # update elevator positions and take out call
 es.take_request({
@@ -30,7 +30,6 @@ es.take_request({
     "call": {
         "floor": 1,
         "sense": "upward",
-        "elevator_id": -1,
         "call_type": "out"
     },
     "state": {
